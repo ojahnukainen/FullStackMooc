@@ -1,16 +1,26 @@
 /* eslint-disable react/prop-types */
 
-import { useState, useEffect, useId } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from 'react'
+import personsService from './services/persons.js'
 
+const RemoveContactButton = (props) =>{
+  
+  
+  return(
+    <form onSubmit={removeContact}>
+    <button type="submit">x</button>
+    </form>
+  )
+ 
+}
 
 const Contact = (props) => (
   <div>
-    {props.personsToShow.map((key)=><div key={key.number}> {key.name} | {key.number}</div>)}
+    {props.personsToShow.map((key)=><h4 key={key.number}> {key.name} | {key.number} <button onClick={props.handleRemoveContact} name={key.name} id={key.id}>X</button></h4>)}
 </div>
 )
 const Contacts = (props) => {
-  const {persons, filterInput, isFiltered} = props
+  const {persons, filterInput, isFiltered, handleRemoveContact} = props
   console.log("contacts filtrInput",props.filterInput.toLowerCase())
 
   const personsToShow = isFiltered ? 
@@ -18,7 +28,7 @@ const Contacts = (props) => {
     : persons
 
   return(
-    <Contact personsToShow={personsToShow} />
+    <Contact personsToShow={personsToShow} handleRemoveContact={handleRemoveContact}/>
   )
 }
 const Filter = (props) =>(
@@ -34,12 +44,12 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterInput, setFilterInput] = useState('')
   const [isFiltered, setIsFilterd] = useState(false)
-  const db_adress = "http://localhost:3001/persons"
 
 
 const fetchPersonsFromDB = ()=>{
   console.log("Effect")
-  axios.get(db_adress)
+  personsService
+        .getAll()
         .then(response =>{
           console.log("kisakala on valmis")
           setPersons(response.data)
@@ -59,10 +69,12 @@ const fetchPersonsFromDB = ()=>{
         number: newNumber,
         id: newNumber, //to keep the id unique even things are deleted
       }
-      axios.post(db_adress,contactObject).then(response =>{console.log(response)})
-      setPersons(persons.concat(contactObject))
-      setNewName('')
-      setNewNumber('')
+      personsService.create(contactObject)
+      .then(response =>
+        {console.log(response)})
+          setPersons(persons.concat(contactObject))
+          setNewName('')
+          setNewNumber('')
     } else {
       alert(`${newName} is already part of the phonebook`)
       setNewName('')
@@ -86,6 +98,22 @@ const fetchPersonsFromDB = ()=>{
     console.log("setIsfiltered",isFiltered)
   }
 
+  const handleRemoveContact = (event) =>{
+    event.preventDefault()
+    console.log("juhuu remove contact", event)
+    console.log("remove contact", event.target.id)
+    if(window.confirm(`Do you want to delete ${event.target.name}`)){
+      personsService
+      .deletePerson(event.target.id)
+      .then(response =>{
+        console.log(response)
+        setPersons(persons.filter(person => person.name !== event.target.name))
+        
+      }).catch(response=>{console.log("jokin meni nyt pieleen", response)}
+        
+      )
+    }    
+  }
     useEffect(fetchPersonsFromDB,[])
   return (
     <div>
@@ -101,7 +129,7 @@ const fetchPersonsFromDB = ()=>{
         </div>
       </form>
       <h2>Numbers</h2>
-      <Contacts persons={persons} filterInput={filterInput} isFiltered={isFiltered} />
+      <Contacts persons={persons} filterInput={filterInput} isFiltered={isFiltered} handleRemoveContact={handleRemoveContact}/>
       
     </div>
   )
