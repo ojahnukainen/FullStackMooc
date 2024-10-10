@@ -6,6 +6,7 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  margin-left: 20px;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -52,6 +53,30 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+.notification{
+  font-size: medium;
+  font-weight: 600;
+  padding: 20px;
+  border-style: groove;
+  border-color: #06b118;
+  color: #444444;
+  margin-bottom: 45px;
+  border-radius: 10px;
+  background-color: #d6e6c5;
+}
+
+.errorNotification{
+  font-size: medium;
+  font-weight: 600;
+  padding: 20px;
+  border-style: groove;
+  border-color: #b12306;
+  color: #444444;
+  margin-bottom: 45px;
+  border-radius: 10px;
+  background-color: #e6c9c5;
 }
 
 @media (prefers-color-scheme: light) {

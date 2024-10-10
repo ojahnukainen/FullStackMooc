@@ -3,17 +3,6 @@
 import { useState, useEffect } from 'react'
 import personsService from './services/persons.js'
 
-const RemoveContactButton = (props) =>{
-  
-  
-  return(
-    <form onSubmit={removeContact}>
-    <button type="submit">x</button>
-    </form>
-  )
- 
-}
-
 const Contact = (props) => (
   <div>
     {props.personsToShow.map((key)=><h4 key={key.number}> {key.name} | {key.number} <button onClick={props.handleRemoveContact} name={key.name} id={key.id}>X</button></h4>)}
@@ -21,7 +10,6 @@ const Contact = (props) => (
 )
 const Contacts = (props) => {
   const {persons, filterInput, isFiltered, handleRemoveContact} = props
-  console.log("contacts filtrInput",props.filterInput.toLowerCase())
 
   const personsToShow = isFiltered ? 
     persons.filter(value => value.name.toLowerCase().includes(filterInput.toLowerCase())) 
@@ -37,6 +25,16 @@ const Filter = (props) =>(
   </form>
 )
 
+const Notification = (props) =>{
+  if (props.message === null){
+    return null
+  }
+  return(
+    <div className={props.notificationClass}>
+        {props.message}
+    </div>
+  )
+}
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -44,14 +42,13 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterInput, setFilterInput] = useState('')
   const [isFiltered, setIsFilterd] = useState(false)
-
+  const [message, setMessage] = useState(null)
+  const [notificationClass, setNotificationClass] = useState(null)
 
 const fetchPersonsFromDB = ()=>{
-  console.log("Effect")
   personsService
         .getAll()
         .then(response =>{
-          console.log("kisakala on valmis")
           setPersons(response.data)
         })
 
@@ -64,52 +61,87 @@ const fetchPersonsFromDB = ()=>{
     
     if (duplicateCheck.length == 0){
     
-      const contactObject = {
-        name: newName,
-        number: newNumber,
-        id: newNumber, //to keep the id unique even things are deleted
-      }
-      personsService.create(contactObject)
-      .then(response =>
-        {console.log(response)})
-          setPersons(persons.concat(contactObject))
+        const contactObject = {
+          name: newName,
+          number: newNumber,
+          id: newNumber, //to keep the id unique even things are deleted
+        }
+        personsService.create(contactObject)
+        .then(response =>
+          {console.log(response)})
+            setPersons(persons.concat(contactObject))
+            setNewName('')
+            setNewNumber('')
+
+        setMessage(`${newName} with number ${newNumber} has been added to the phonebook`)   
+        setTimeout(()=>{
+          setMessage(null)
+        },5000) 
+    } else {
+        if (window.confirm(`${newName} is already part of the phonebook, would you like to update the number`)){
+          const enteredName = event.target[0].value
+          const person = persons.find(p => p.name === enteredName)  
+          const updatedPerson = {...person, id: newNumber,number: newNumber,}
+          
+          personsService.update(person.id, updatedPerson)
+            .then(response =>{
+              setPersons(persons.map(person => person.name !== enteredName ? person : response.data))
+            
           setNewName('')
           setNewNumber('')
-    } else {
-      alert(`${newName} is already part of the phonebook`)
-      setNewName('')
-      setNewNumber('')
+          
+          setMessage(`${newName} number has been upated to ${newNumber} to the phonebook`)
+          setNotificationClass("notification")   
+          setTimeout(()=>{
+            setMessage(null)
+            setNotificationClass(null)
+          },5000) 
+
+          }).catch(error =>{console.log("Well something went wrong. check this", error)})
+        } else {
+          setNewName('')
+          setNewNumber('')
+        }
+      
     }
   }
 
   const handleNewNumber = (event) => {
-    console.log(`handle new name ${event.target.value}`)
     setNewNumber(event.target.value)
   }
   const handleNewName = (event) => {
-    console.log(`handle new name ${event.target.value}`)
     setNewName(event.target.value)
   }
   const handleFilterInput = (event) => {
     setFilterInput(event.target.value)
-    console.log(event.target.value.length)
     event.target.value.length > 0 ? 
     setIsFilterd(true) : setIsFilterd(false)
-    console.log("setIsfiltered",isFiltered)
   }
 
   const handleRemoveContact = (event) =>{
     event.preventDefault()
-    console.log("juhuu remove contact", event)
-    console.log("remove contact", event.target.id)
     if(window.confirm(`Do you want to delete ${event.target.name}`)){
       personsService
       .deletePerson(event.target.id)
       .then(response =>{
-        console.log(response)
         setPersons(persons.filter(person => person.name !== event.target.name))
-        
-      }).catch(response=>{console.log("jokin meni nyt pieleen", response)}
+
+        setMessage(`${event.target.name} number has been removed from the phonebook`)
+        setNotificationClass("notification")   
+          setTimeout(()=>{
+            setMessage(null)
+            setNotificationClass(null)
+          },5000) 
+
+      }).catch(response=>{
+        console.log("jokin meni nyt pieleen", response)
+        setMessage(`${event.target.name} number has been already probably removed from the phonebook`)
+        setNotificationClass("errorNotification")   
+          setTimeout(()=>{
+            setMessage(null)
+            setNotificationClass(null)
+          },5000) 
+      }
         
       )
     }    
@@ -118,7 +150,7 @@ const fetchPersonsFromDB = ()=>{
   return (
     <div>
       <h1>Phonebook</h1>
-
+      <Notification message={message} notificationClass={notificationClass} />
       <Filter valueFilter={filterInput} handleFilterInput={handleFilterInput} />
       <h2>Add New User</h2>
       <form onSubmit={addContact}>
