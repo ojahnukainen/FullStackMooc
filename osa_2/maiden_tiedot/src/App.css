@@ -4,3 +4,10 @@
   padding: 2rem;
   text-align: center;
 }
+
+.showCountry {
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

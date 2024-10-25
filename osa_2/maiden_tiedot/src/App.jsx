@@ -29,7 +29,12 @@ const CountryList = (props) =>{
   const data = props.lista
  return(
     <div>
-        {data.map((key) =>  <h6 key={idkey = idkey + 1}>{key.name.common}</h6>)}
+        {data.map((key) => 
+          <div className='showCountry' key={idkey = idkey + 1}>
+            <h6>{key.name.common} </h6>
+            <button value={key.name.common} onClick={props.handleShowButton}>Show</button>
+          </div>
+        )}
     </div>
  )
 }
@@ -41,7 +46,7 @@ const Countries = (props) =>{
 
   if(lista.length > 10) return(<div><b>There is too many mactches, please specify more</b></div>)
   if(lista.length > 1) return(
-    <CountryList lista={lista}/>
+    <CountryList lista={lista} handleShowButton={props.handleShowButton}/>
   )
   if(lista.length === 1) return(
     <CountryDetails data={lista[0]}/>
@@ -60,6 +65,10 @@ function App() {
     })
   }
 
+  const handleShowButton = (event) =>{
+    event.preventDefault()
+    setSearchText(event.target.value)
+  }
 
   const handleSearchText = (event) =>{
     event.preventDefault()
@@ -72,7 +81,7 @@ function App() {
      <form>
       <div>
           Find countries: <input value={searchText} onChange={handleSearchText}/>
-          <Countries countryData={countryData} searchText={searchText}/>
+          <Countries countryData={countryData} searchText={searchText} handleShowButton={handleShowButton}/>
       </div>
     </form>
     </>
