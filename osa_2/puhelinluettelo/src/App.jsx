@@ -66,14 +66,21 @@ const fetchPersonsFromDB = ()=>{
           number: newNumber,
           id: newNumber, //to keep the id unique even things are deleted
         }
-        personsService.create(contactObject)
-        .then(response =>
-          {console.log(response)})
-            setPersons(persons.concat(contactObject))
-            setNewName('')
-            setNewNumber('')
+        personsService
+          .create(contactObject)
+          .then(response =>
+            {console.log(response)
+              setPersons(persons.concat(contactObject))
+              setMessage(`${newName} with number ${newNumber} has been added to the phonebook`) 
+            }).catch(error =>{
+              setNotificationClass("errorNotification")
+              setMessage(error.response.data.error)
+            })
+          
+          setNewName('')
+          setNewNumber('')
 
-        setMessage(`${newName} with number ${newNumber} has been added to the phonebook`)   
+          
         setTimeout(()=>{
           setMessage(null)
         },5000) 
@@ -155,7 +162,7 @@ const fetchPersonsFromDB = ()=>{
       <h2>Add New User</h2>
       <form onSubmit={addContact}>
         <div>name: <input value={newName} onChange={handleNewName} required/> </div>
-        <div>number: <input type="number" value={newNumber} onChange={handleNewNumber} required/></div>
+        <div>number: <input type="text" placeholder='xxx-xxxxxxxx' value={newNumber} onChange={handleNewNumber} required/></div>
         <div>
           <button type="submit">add</button>
         </div>
