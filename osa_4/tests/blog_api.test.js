@@ -1,6 +1,8 @@
 const { test, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -11,11 +13,17 @@ const api = supertest(app)
 
 beforeEach(async () =>{
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
   for(let element of helper.initialBlogs) {
     let blogObject = new Blog(element)
     await blogObject.save()
   }
+
+  const passwordHash = await bcrypt.hash('sekret',10)
+  const user = new User({username: 'root', passwordHash: passwordHash})
+  
+  await user.save()
 })
 
 test('blog entrys are returned as json', async () => {
@@ -39,11 +47,14 @@ test('blog ohjects contains correct type id', async () =>{
 })
 
 test('add new valid blog to db', async () =>{
+  const userAtStart = await helper.usersInDb()
+ 
   const newBlog = {
     title: "Vue patterns",
     author: "Eric Chan",
     url: "https://vuepatterns.com/",
-    likes: 23
+    likes: 23,
+    userId: userAtStart[0].id
   }
   await api
     .post('/api/blogs')
@@ -59,16 +70,20 @@ test('add new valid blog to db', async () =>{
 })
 
 test('add blog without likes and app fills it to be zero', async () =>{
+  const userAtStart = await helper.usersInDb()
+ 
   const newBlog = {
     title: "Vue patterns",
     author: "Eric Chan",
-    url: "https://vuepatterns.com/"
+    url: "https://vuepatterns.com/",
+    userId: userAtStart[0].id
   }
   const expecteLikesCount = {
     title: "Vue patterns",
     author: "Eric Chan",
     url: "https://vuepatterns.com/",
-    likes: 0
+    likes: 0,
+    userId: userAtStart[0].id
   }
   await api
     .post('/api/blogs')
@@ -83,15 +98,19 @@ test('add blog without likes and app fills it to be zero', async () =>{
 })
 
 test('Return 400 if title or url missing from the post', async () =>{
+  const userAtStart = await helper.usersInDb()
+ 
   const newBlogNoTitle = {
     author: "Eric Chan",
     url: "https://vuepatterns.com/",
-    likes: 23
+    likes: 23,
+    userId: userAtStart[0].id
   }
   const newBlogNoUrl = {
     title: "Vue patterns",
     author: "Eric Chan",
-    likes: 23
+    likes: 23,
+    userId: userAtStart[0].id
   }
   await api
     .post('/api/blogs')
@@ -118,7 +137,7 @@ test('Delete blog from db', async () =>{
   assert.strictEqual(responseAfterDelete.body.length, helper.initialBlogs.length -1)
 })
 
-test.only('Update blog likes', async () =>{
+test('Update blog likes', async () =>{
   const response = await api.get('/api/blogs')
   const id = response.body[0].id
   const likes = response.body[0].likes
@@ -136,6 +155,9 @@ test.only('Update blog likes', async () =>{
   assert.strictEqual(content, likes+1)
 })
 
+
+
 after(async () => {
+  await User.deleteMany({})
   await mongoose.connection.close()
 })

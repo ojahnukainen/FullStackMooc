@@ -1,5 +1,6 @@
-const { test, describe } = require('node:test')
+const { test, describe, after } = require('node:test')
 const assert = require('node:assert')
+const mongoose = require('mongoose')
 const listHelper = require('../utils/list_helper')
 const listOfBlogs = [
   {
@@ -74,4 +75,8 @@ describe('favoriteBlog',() =>{
       likes: 12
     }
 )
+})  
+
+after(async () => {
+  await mongoose.connection.close()
 })

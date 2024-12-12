@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "The pokemon blog",
-  "author": "The ash ketchum",
-  "url": "https://www.pokemonblog.com",
-  "likes": 4000
+  "title": "The React cast",
+  "author": "R. eactum",
+  "url": "https://www.reactcast.com",
+  "likes": 60,
+  "userId": "6759b196000c925d90ca90b0"
 }
