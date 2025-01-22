@@ -46,7 +46,7 @@ test('blog ohjects contains correct type id', async () =>{
   assert(content.includes("id"))
 })
 
-test('add new valid blog to db', async () =>{
+test.only('add new valid blog to db', async () =>{
   const userAtStart = await helper.usersInDb()
  
   const newBlog = {
