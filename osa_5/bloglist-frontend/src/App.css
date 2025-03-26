@@ -1,0 +1,44 @@
+.content{
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.signin-form{
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-Blogs-form{
+  max-width: 1000px;
+  display: flex;
+
+}
+label{
+  padding-right: 10px;
+  padding-left: 20px;
+}
+
+.notification{
+  font-size: medium;
+  font-weight: 600;
+  padding: 20px;
+  border-style: groove;
+  border-color: #06b118;
+  color: #444444;
+  margin-bottom: 45px;
+  border-radius: 10px;
+  background-color: #d6e6c5;
+}
+
+.errorNotification{
+  font-size: medium;
+  font-weight: 600;
+  padding: 20px;
+  border-style: groove;
+  border-color: #b12306;
+  color: #444444;
+  margin-bottom: 45px;
+  border-radius: 10px;
+  background-color: #e6c9c5;
+}
