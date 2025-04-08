@@ -1,8 +1,10 @@
 import './App.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import AddBlogForm from './components/AddBlogForm'
+import Toggable from './components/Toggable'
 
 const Notifications = (props) =>{
   if(props.notification === null){
@@ -22,15 +24,14 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [isAuth, setIsAuth] = useState(false)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [notification ,setNotification] = useState(null)
   const [notficationClass, setNotificationClass] = useState(null)
+  const blogFormRef = useRef()
+
 
   const handleSubmit = async (event) =>{
     event.preventDefault()
-    console.log("logged in with followin stuff", username,password)
+    //console.log("logged in with followin stuff", username,password)
     try{
       const userDetails = await loginService.login({username,password})
       console.log("user form handle submit",userDetails)
@@ -56,15 +57,14 @@ const App = () => {
     }
     
   }
+
   const getBlogs = () => {
     blogService.getAll().then(blogsData =>{
-      setBlogs( blogsData )
-      console.log(blogsData,"blogs")
-    }
-      
-    )  
+      setBlogs( blogsData.sort((a,b)=>(b.likes-a.likes)) )
+      //console.log(blogsData,"blogs")
+    })  
   }
-  
+
   const loginForm = () =>(
     <div>
       <h2>Sign in to see your blogs</h2>
@@ -79,29 +79,62 @@ const App = () => {
     </div> 
   )
      
-  const submitNewBlog = async (event)=>{
-    event.preventDefault()
-
-    const newBlogEntry = {
-      title: title,
-      author: author,
-      url: url
-    }
-    try{
-      const addDetails = await blogService.create(newBlogEntry)
-      console.log(addDetails)
-      setBlogs(blogs.concat(newBlogEntry))
+  const createNewBlog = ( blogObject )=>{
+    
+    blogFormRef.current.toggleVisibility()
+    blogService
+    .create(blogObject)
+    .then(returnedBlog =>{
+      setBlogs(blogs.concat(returnedBlog))
       setNotification(`a new blog ${title} by ${author} has been added to collection`)
       setNotificationClass('notification')
       setTimeout(()=>{
         setNotification(null)
         setNotificationClass(null)
       },5000)
-    }catch(e){
+    })
+    .catch((e)=>{
       console.log(e," no joku meni vihkoon,mut onko tää hyvä paikka nostaa asia esille")
     }
-    
+    )   
   }
+
+const updateLikeCounter = async (updateObject) =>{
+  try{
+    await blogService.update(updateObject, updateObject.id)
+    const updatedBlogs = await blogService.getAll()
+    setBlogs(updatedBlogs.sort((a,b)=>(b.likes-a.likes)))
+  }catch(e){
+    console.log(e,"something went wrong while updating the like counter")
+  }
+}
+
+const deleteBlog = async (deleteBlogObject) =>{
+  try{
+    if(window.confirm(`Are you sure you would like to delete ${deleteBlogObject.title} by ${deleteBlogObject.author}`)){
+
+      await blogService.deleteBlog(deleteBlogObject.id)
+      const updatedBlogs = await blogService.getAll()
+      setBlogs(updatedBlogs.sort((a,b)=>(b.likes-a.likes)))
+    }
+    
+  }catch(e){
+    console.log(e,"Something wrong while deleting")
+  }
+}
+
+const renderBlogs = ()=>(
+  <div className="cards">
+      {
+      (blogs === undefined) ? <div>There is no blogs yet</div> :
+      blogs.map((blog) => 
+        <Blog key={blog.id} 
+          {... {blog, user, updateLikeCounter, deleteBlog}}/>
+      ) 
+    }
+    </div> 
+)
+
 
   const blogsView = () =>(
     <div>
@@ -110,35 +143,26 @@ const App = () => {
         window.localStorage.removeItem("loggedBlogUser") 
         setIsAuth(false)} }>log off</button>
        <Notifications notification={notification} notClass={notficationClass} />
-        <h2>Add new blog</h2>
-          <form className='add-Blogs-form' onSubmit={submitNewBlog}>
-            <label>Tittle</label>
-            <input type="text" onChange={({target})=> setTitle(target.value)}></input>
-            <label>Author</label>
-            <input type="text" onChange={({target})=> setAuthor(target.value)}></input>
-            <label>URL</label>
-            <input type="text" onChange={({target})=> setUrl(target.value)}></input>
-          <button type="submit">Add blog</button>
-        </form>
+        <Toggable buttonLabel='Add blog' ref={blogFormRef}>
+          <AddBlogForm 
+            submitNewBlog={createNewBlog}
+          />
+        </Toggable>
+      
+       
       <hr></hr> 
       <h2>blogs</h2>
-      {
-        (blogs === undefined) ? <div>There is no blogs yet</div> :
-        blogs.map((blog) => 
-          <Blog key={blog.id} blog={blog} />
-        ) 
-      }
-      
+      {renderBlogs()}
     </div>
   )
 
   
   useEffect(()=>{
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
-    console.log(loggedUserJSON,"jsonia use effectust")
+    //console.log(loggedUserJSON,"jsonia use effectust")
     if(loggedUserJSON){
       const userData = JSON.parse(loggedUserJSON)
-      console.log(JSON.parse(loggedUserJSON),"userdata from react")
+      //console.log(JSON.parse(loggedUserJSON),"userdata from react")
       setUser(userData)
       blogService.setToken(userData.token)
       setIsAuth(true)
@@ -146,12 +170,11 @@ const App = () => {
   },[])
   useEffect(getBlogs,[isAuth])
   return (
+
     <div className='content'>
       <h2>Blog listing tool</h2>
         {!user && loginForm()}
         {user && blogsView()}
-          
-      
     </div>
   )
 }
