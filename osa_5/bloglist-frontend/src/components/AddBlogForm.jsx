@@ -1,6 +1,6 @@
-import {useState} from 'react'
+import { useState } from 'react'
 
-const AddBlogForm = ({submitNewBlog}) => {
+const AddBlogForm = ({ submitNewBlog }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -13,25 +13,25 @@ const AddBlogForm = ({submitNewBlog}) => {
       author: author,
       url: url
     })
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+    setTitle('')
+    setAuthor('')
+    setUrl('')
   }
 
-return(
+  return(
     <div>
       <h2>Add new blog</h2>
-        <form className='add-Blogs-form' onSubmit={addBlog}>
-          <label>Title</label>
-          <input type="text" onChange={({target})=> setTitle(target.value)}></input>
-          <label>Author</label>
-          <input type="text" onChange={({target})=> setAuthor(target.value)}></input>
-          <label>URL</label>
-          <input type="text" onChange={({target})=> setUrl(target.value)}></input>
-         <button type="submit">Add blog</button>
-        </form>
+      <form className='add-Blogs-form' onSubmit={addBlog}>
+        <label>Title</label>
+        <input type="text" onChange={({ target }) => setTitle(target.value)}></input>
+        <label>Author</label>
+        <input type="text" onChange={({ target }) => setAuthor(target.value)}></input>
+        <label>URL</label>
+        <input type="text" onChange={({ target }) => setUrl(target.value)}></input>
+        <button type="submit">Add blog</button>
+      </form>
     </div>
-    
+
   )
 }
 
