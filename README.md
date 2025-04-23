@@ -46,7 +46,8 @@ Below contains the some of the consepts I have learned while attending the cours
 
 ### Part 5 (on prgress)
 - Creating login for frontend
-- Usage of local storage 
+- Usage of local storage
+- ESlint ja PropTypes 
 
 
 
