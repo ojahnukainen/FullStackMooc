@@ -62,13 +62,13 @@ const Blog = ({ blog, user, updateLikeCounter, deleteBlog }) => {
         </div>
         <button className="cardButton" onClick={toggleVisibility}>view</button>
       </div>
-      <div className="cardContent" style={hideWhenVisible}>
+      <div className="cardContentOpen" style={hideWhenVisible}>
         <div className="">
           <ul>
-            <ol><h3>{blog.title}</h3></ol>
+            <ol><b>{blog.title}</b></ol>
             <ol>Blog author - {blog.author}</ol>
             <ol>{blog.url}</ol>
-            <ol>Likes {blog.likes} <button onClick={addLike}>like</button> </ol>
+            <ol><div>Likes {blog.likes}</div> <button onClick={addLike}>like</button> </ol>
             <ol>{blog.user === undefined ? null: blog.user.name }</ol>
           </ul>
         </div>
