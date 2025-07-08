@@ -52,7 +52,7 @@ const Blog = ({ blog, user, updateLikeCounter, deleteBlog }) => {
 
   useEffect(isCreatorCheck)
   return(
-    <div className="card">
+    <div data-testid="new-added-blog" className="card">
       <div className="cardContent" style={showWhenVisible}>
         <div>
           <h3>
@@ -68,7 +68,7 @@ const Blog = ({ blog, user, updateLikeCounter, deleteBlog }) => {
             <ol><b>{blog.title}</b></ol>
             <ol>Blog author - {blog.author}</ol>
             <ol>{blog.url}</ol>
-            <ol><div>Likes {blog.likes}</div> <button onClick={addLike}>like</button> </ol>
+            <ol><div data-testid="like_count">Likes {blog.likes}</div> <button onClick={addLike}>like</button> </ol>
             <ol>{blog.user === undefined ? null: blog.user.name }</ol>
           </ul>
         </div>

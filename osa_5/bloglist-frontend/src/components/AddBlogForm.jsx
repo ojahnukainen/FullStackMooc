@@ -23,13 +23,13 @@ const AddBlogForm = ({ submitNewBlog }) => {
       <h2>Add new blog</h2>
       <form className='add-Blogs-form' onSubmit={addBlog}>
         <label>Title
-          <input type="text" onChange={({ target }) => setTitle(target.value)}></input>
+          <input data-testid='title' type="text" onChange={({ target }) => setTitle(target.value)}></input>
         </label>
         <label>Author
-          <input type="text" onChange={({ target }) => setAuthor(target.value)}></input>
+          <input data-testid='author' type="text" onChange={({ target }) => setAuthor(target.value)}></input>
         </label>
         <label>URL
-         <input type="text" onChange={({ target }) => setUrl(target.value)}></input>
+          <input data-testid='url' type="text" onChange={({ target }) => setUrl(target.value)}></input>
         </label>
         <button type="submit">Add blog</button>
       </form>

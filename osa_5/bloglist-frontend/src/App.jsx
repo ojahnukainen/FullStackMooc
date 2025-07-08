@@ -6,6 +6,7 @@ import loginService from './services/login'
 import AddBlogForm from './components/AddBlogForm'
 import Toggable from './components/Toggable'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -54,17 +55,22 @@ const App = () => {
     })
   }
 
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value)
+  }
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+  }
   const loginForm = () => (
     <div>
-      <h2>Sign in to see your blogs</h2>
       <Notification message={notification} notClass={notficationClass} />
-      <form onSubmit={handleSubmit} className="signin-form">
-        <label>Username</label>
-        <input type="text" name="username" value={username} onChange={({ target }) => setUsername(target.value)}></input>
-        <label>Password</label>
-        <input type="password" value={password} onChange={({ target }) => setPassword(target.value)}></input>
-        <button type="submit" >Login</button>
-      </form>
+      <LoginForm
+        handleSubmit={handleSubmit}
+        username={username}
+        password={password}
+        handlePasswordChange={handlePasswordChange}
+        handleUsernameChange={handleUsernameChange}
+      />
     </div>
   )
 

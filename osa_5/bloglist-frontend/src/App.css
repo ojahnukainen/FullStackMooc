@@ -28,7 +28,7 @@ label{
   color: #444444;
   margin-bottom: 45px;
   border-radius: 10px;
-  background-color: #d6e6c5;
+  background-color: rgb(214, 230, 197);
 }
 
 .errorNotification{
@@ -36,7 +36,7 @@ label{
   font-weight: 600;
   padding: 20px;
   border-style: groove;
-  border-color: #b12306;
+  border-color: rgb(177, 35, 6);
   color: #444444;
   margin-bottom: 45px;
   border-radius: 10px;
