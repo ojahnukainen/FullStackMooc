@@ -60,7 +60,9 @@ blogsRouter.delete('/:id', async (request, response, next) => {
  try{
   console.log(request.params,"delete requeser")
   const blog = await Blog.findById(request.params.id)
-  const userId = request.user.id
+  console.log(blog, "node blog")
+  const userId = request.user._id
+  console.log(userId, "node userID")
   console.log(blog,"deleten blog olio")
   if(blog.user.toString() === userId.toString()){
     const deleteBlog = await Blog.findByIdAndDelete(request.params.id)
@@ -82,7 +84,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
 
 blogsRouter.put('/:id', async (request, response, next)=>{
   const body = request.body
-  const count = body.likes +1
+  const count = body.likes
 
   const blogUpdate = {
     likes: count
