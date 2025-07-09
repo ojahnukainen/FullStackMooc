@@ -1,6 +1,8 @@
 # Important skils learned from part 5
 -Debugging own front and backend code
 -How to use local storage
+-Vitest frontend unit testing
+-E2E testing with Playwright
 
 # Just fyi
 
