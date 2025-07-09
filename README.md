@@ -44,10 +44,12 @@ Below contains the some of the consepts I have learned while attending the cours
 - Creating token based login
 - Competed tasks: 20/23
 
-### Part 5 (on prgress)
+### Part 5
 - Creating login for frontend
 - Usage of local storage
-- ESlint ja PropTypes 
+- ESlint ja PropTypes
+- Unit testing with Vitest
+- e2e testing with Playwright 
 
 
 
